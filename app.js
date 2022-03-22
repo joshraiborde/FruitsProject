@@ -1,48 +1,56 @@
-const { MongoClient } = require("mongodb");
-// or as an es module:
-// import { MongoClient } from 'mongodb'
+const mongoose = require("mongoose");
 
-// Connection URL
-const url = "mongodb://localhost:27017";
-const client = new MongoClient(url);
-
-// Database Name
-const dbName = "fruitsDB";
+// fruitsDB is the name of the database we want to create/connect to
+mongoose.connect("mongodb://localhost:27017/fruitsDB");
 
 // Current Date and Time
 const now = new Date();
 
-async function main() {
-  // Use connect method to connect to the server
-  await client.connect();
-  console.log("Connected successfully to server on " + now.toUTCString());
-  const db = client.db(dbName);
+// schema for fruits
+const fruitSchema = new mongoose.Schema({
+  name: String,
+  rating: Number,
+  review: String
+});
 
-  // the following code examples can be pasted here...
-  // await insertDocuments(db);
-  await findDocuments(db);
-  return "done on " + now.toUTCString();
-}
+// the schema is used to create a Mongoose model
+// creating a colletion called fruits
+// the 1st parameter, a singular string, is the name of the collection that is going to comply with the fruitSchema
+// the 2nd parameter is the name of the schema
+const Fruit = mongoose.model("Fruit", fruitSchema);
 
-main()
-  .then(console.log)
-  .catch(console.error)
-  .finally(() => client.close());
+// creating a document from the model Fruit
+const pineapple = new Fruit({
+  name: "Pineapple",
+  rating: 9,
+  review: "I like pineapples"
+});
 
-const insertDocuments = async function (db) {
-  const collection = db.collection("fruits");
-  const result = await collection.insertMany([
-    { name: "Apple", score: 8, review: "Great fruit" },
-    { name: "Orange", score: 6, review: "sour" },
-    { name: "Banana", score: 9, review: "Best Best Best" }
-  ]);
-  console.log(`A document was inserted with the _id: ${result.insertedId} on ` + now.toUTCString());
-};
+const lemon = new Fruit({
+  name: "Lemon",
+  rating: 9,
+  review: "Love 'em"
+});
 
-const findDocuments = async function (db) {
-  const collection = db.collection("fruits");
-  const cursor = collection.find({});
-  await cursor.forEach((element) => {
-    console.log(element);
-  });
-};
+const mango = new Fruit({
+  name: "Mango",
+  rating: 10,
+  review: "i like mangos"
+});
+
+// save in bulk
+// specify the name of the mongoose model
+// insertMany() takes two parameters:
+  // 1. an array of objects that match the schema
+  // 2. a callback function which is allows us to log any errors
+    // if theres an error, console log an error
+    // else, log a successful message
+Fruit.insertMany([pineapple, lemon, mango], (error) => {
+  if (error) {
+    console.log(error + " " + now.toUTCString());
+  } else {
+    console.log(
+      "Successfully saved fruits to fruitsDB on " + now.toUTCString()
+    );
+  }
+});
