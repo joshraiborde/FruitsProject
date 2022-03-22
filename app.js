@@ -41,16 +41,32 @@ const mango = new Fruit({
 // save in bulk
 // specify the name of the mongoose model
 // insertMany() takes two parameters:
-  // 1. an array of objects that match the schema
-  // 2. a callback function which is allows us to log any errors
-    // if theres an error, console log an error
-    // else, log a successful message
-Fruit.insertMany([pineapple, lemon, mango], (error) => {
-  if (error) {
+// 1. an array of objects that match the schema
+// 2. a callback function which is allows us to log any errors
+// if theres an error, console log an error
+// else, log a successful message
+// Fruit.insertMany([pineapple, lemon, mango], (error) => {
+//   if (error) {
+//     console.log(error + " " + now.toUTCString());
+//   } else {
+//     console.log(
+//       "Successfully saved fruits to fruitsDB on " + now.toUTCString()
+//     );
+//   }
+// });
+
+// reading from mongoose
+// tap into the fruits collection through the Fruit model
+// the find function has two parameters:
+// 1. err
+// 2. whatever it finds back
+Fruit.find((err, fruits) => {
+  if (err) {
     console.log(error + " " + now.toUTCString());
   } else {
-    console.log(
-      "Successfully saved fruits to fruitsDB on " + now.toUTCString()
-    );
+    mongoose.connection.close();
+    fruits.forEach((fruit) => {
+      console.log(fruit.name + " " + now.toUTCString());
+    });
   }
 });
