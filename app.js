@@ -38,6 +38,8 @@ const mango = new Fruit({
   review: "i like mangos"
 });
 
+// the following block of code is commented out for the sake of lesson 337. READING FROM YOUR DATABASE WITH MONGOOSE,
+  // every time the server is restarted, the mongo server would add the pineapple, lemon and mango fruits to the database again
 // save in bulk
 // specify the name of the mongoose model
 // insertMany() takes two parameters:
