@@ -8,8 +8,15 @@ const now = new Date();
 
 // schema for fruits
 const fruitSchema = new mongoose.Schema({
-  name: String,
-  rating: Number,
+  name: {
+    type: String,
+    required: [true, "Please check your data entry, no name specified"]
+  },
+  rating: {
+    type: Number,
+    min: 1,
+    max: 10
+  },
   review: String
 });
 
@@ -21,25 +28,35 @@ const Fruit = mongoose.model("Fruit", fruitSchema);
 
 // creating a document from the model Fruit
 const pineapple = new Fruit({
-  name: "Pineapple",
+  // name: "Pineapple",
   rating: 9,
   review: "I like pineapples"
 });
 
-const lemon = new Fruit({
-  name: "Lemon",
-  rating: 9,
-  review: "Love 'em"
+Fruit.insertMany([pineapple], (error) => {
+  if (error) {
+    console.log(error + " " + now.toUTCString());
+  } else {
+    console.log(
+      "Successfully saved fruits to fruitsDB on " + now.toUTCString()
+    );
+  }
 });
 
-const mango = new Fruit({
-  name: "Mango",
-  rating: 10,
-  review: "i like mangos"
-});
+// const lemon = new Fruit({
+//   name: "Lemon",
+//   rating: 9,
+//   review: "Love 'em"
+// });
+
+// const mango = new Fruit({
+//   name: "Mango",
+//   rating: 10,
+//   review: "i like mangos"
+// });
 
 // the following block of code is commented out for the sake of lesson 337. READING FROM YOUR DATABASE WITH MONGOOSE,
-  // every time the server is restarted, the mongo server would add the pineapple, lemon and mango fruits to the database again
+// every time the server is restarted, the mongo server would add the pineapple, lemon and mango fruits to the database again
 // save in bulk
 // specify the name of the mongoose model
 // insertMany() takes two parameters:
@@ -47,6 +64,7 @@ const mango = new Fruit({
 // 2. a callback function which is allows us to log any errors
 // if theres an error, console log an error
 // else, log a successful message
+
 // Fruit.insertMany([pineapple, lemon, mango], (error) => {
 //   if (error) {
 //     console.log(error + " " + now.toUTCString());
