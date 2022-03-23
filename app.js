@@ -1,177 +1,104 @@
-const mongoose = require("mongoose");
-
-// fruitsDB is the name of the database we want to create/connect to
-mongoose.connect("mongodb://localhost:27017/fruitsDB");
-
-// Current Date and Time
-const now = new Date();
-
-// schema for fruits
-const fruitSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, "Please check your data entry, no name specified"]
-  },
-  rating: {
-    type: Number,
-    min: 1,
-    max: 10
-  },
-  review: String
-});
-
-// schema for people
-const personSchema = new mongoose.Schema({
-  name: String,
-  age: Number
-});
-
-// the schema is used to create a Mongoose model
-// creating a colletion called fruits
-// the 1st parameter, a singular string, is the name of the collection that is going to comply with the fruitSchema
-// the 2nd parameter is the name of the schema
-const Fruit = mongoose.model("Fruit", fruitSchema);
-
-// the schema is used to create a Mongoose model
-// creating a colletion called person
-// the 1st parameter, a singular string, is the name of the collection that is going to comply with the personSchema
-// the 2nd parameter is the name of the schema
-const Person = mongoose.model("Person", personSchema);
-
-
-
-// creating a document from the model Fruit
-const pineapple = new Fruit({
-  name: "Pineapple",
-  rating: 9,
-  review: "I like pineapples"
-});
-
-// creating a document from the model Person
-const person = new Person({
-  name: "John",
-  age: 37
-});
-
-// added an entry to the fruitDB
-Fruit.insertMany([pineapple], (error) => {
-  if (error) {
-    console.log(error + " " + now.toUTCString());
-  } else {
-    console.log(
-      "Successfully saved fruits to fruitsDB on " + now.toUTCString()
-    );
-  }
-});
-
-// added an entry to the personDB
-Person.insertMany([person], (error) => {
-  if (error) {
-    console.log(error + " " + now.toUTCString());
-  } else {
-    console.log(
-      "Successfully saved " + person.name + " to fruitsDB on " + now.toUTCString()
-    );
-  }
-});
-
-const lemon = new Fruit({
-  name: "Lemon",
-  rating: 9,
-  review: "Love 'em"
-});
-
-const mango = new Fruit({
-  name: "Mango",
-  rating: 10,
-  review: "i like mangos"
-});
-
-// the following block of code is commented out for the sake of lesson 337. READING FROM YOUR DATABASE WITH MONGOOSE,
-// every time the server is restarted, the mongo server would add the pineapple, lemon and mango fruits to the database again
-// save in bulk
-// specify the name of the mongoose model
-// insertMany() takes two parameters:
-// 1. an array of objects that match the schema
-// 2. a callback function which is allows us to log any errors
-// if theres an error, console log an error
-// else, log a successful message
-
-// Fruit.insertMany([pineapple, lemon, mango], (error) => {
-//   if (error) {
-//     console.log(error + " " + now.toUTCString());
-//   } else {
-//     console.log(
-//       "Successfully saved fruits to fruitsDB on " + now.toUTCString()
-//     );
-//   }
-// });
-
-// reading from mongoose
-// tap into the fruits collection through the Fruit model
-// the find function has two parameters:
-// 1. err
-// 2. whatever it finds back
-Fruit.find((err, fruits) => {
-  if (err) {
-    console.log(error + " " + now.toUTCString());
-  } else {
-    mongoose.connection.close();
-    fruits.forEach((fruit) => {
-      console.log(fruit.name + " " + now.toUTCString());
-    });
-  }
-});
-
-// reading from mongoose
-// tap into the fruits collection through the Person model
-// the find function has two parameters:
-// 1. err
-// 2. whatever it finds back
-Person.find((err, persons) => {
-  if (err) {
-    console.log(error + " " + now.toUTCString());
-  } else {
-    mongoose.connection.close();
-    persons.forEach((person) => {
-      console.log(person.name + " " + now.toUTCString());
-    });
-  }
-});
-
-// update
-// the 1st param is the item you want to update, which is denoted by the id
-// 2nd param is what do you want to do update about the 1st param, in this case, it is to update the name field of the id
-// 3rd param is to log any errors or a "successful" message.
-// Fruit.updateOne(
-//   { _id: "623b392862be372cf86c5e2a" },
-//   { name: "Peach" },
-//   (err) => {
-//     if (err) {
-//       console.log(error + " " + now.toUTCString());
-//     } else {
-//       console.log("Successfully updated the document on " + now.toUTCString());
-//     }
-//   }
-// );
-
-// delete
-// the 1st param is the item you want to delete, which is denoted by the id
-// 2nd param is to log any errors or a "successful" message.
-
-// Fruit.deleteOne({name: "Peach"}, (err) => {
-//   if (err) {
-//     console.log(error + " " + now.toUTCString());
-//   } else {
-//     console.log("Successfully deleted " + fruit.name + " the document on " + now.toUTCString());
-//   }
-// })
-
-// delete
-Person.deleteMany({ name: "John" }, (err) => {
-  if (err) {
-    console.log(error + " " + now.toUTCString());
-  } else {
-    console.log("Successfully deleted all the '" + person.name + "'s in the document on " + now.toUTCString());
-  }
-});
+const mongoose = require('mongoose');
+ 
+ 
+// Call async main function declared below and catch any errors.
+main().catch(err => console.log(err));
+ 
+ 
+// Go read this for a better understanding of async and await:
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
+async function main() {
+// Connect to mongoDB locally.
+  await mongoose.connect('mongodb://localhost:27017/fruitsDB');
+ 
+  // Creating the Schema.
+  const fruitSchema = new mongoose.Schema({
+    name: {
+      type: String,
+      required: [true, "Fruits must have a name."],
+    },
+    rating: {    // Pay attention here because Angela uses score somewhere in the video... it took me 35 minutes to figure out why my code wasn't working xD.
+      type: Number,
+      min: [1, "min >= 1"],
+      max: [10, "max <= 10"],
+    },
+    review: String,
+  });
+ 
+  // Compiling Schema into a Model. FRUIT MODEL.
+  const Fruit = mongoose.model("Fruit", fruitSchema);
+ 
+ 
+  // Creating person Schema.
+  const personSchema = new mongoose.Schema({
+    name: String,
+    age: Number,
+    favouriteFruit: fruitSchema, //REMEMBER TO ADD THIS OR IT WON'T WORK.
+  });
+ 
+  // Compiling person Schema into a model. PERSON MODEL.
+  const Person = mongoose.model("Person", personSchema);
+ 
+ 
+// First part of the lesson 340.
+ 
+  const pineapple = new Fruit({
+    name: "Pineapple",
+    rating: 9,
+    review: "Great fruit.",
+  });
+ 
+  await pineapple.save();
+ 
+ 
+  const person = new Person({
+    name: "Amy",
+    age: 12,
+    favouriteFruit: pineapple, //Add a reference to pineapple doc.
+  });
+  
+  await person.save();
+ 
+ 
+ 
+// Second part of lesson 340.
+ 
+  // const blueberry = new Fruit({
+  //   name: "Blueberry",
+  //   rating: 8,
+  //   review: "sweet",
+  // });
+ 
+  // await blueberry.save();
+    
+  // Add favouriteFruit document reference to John.
+  // Person.updateOne({name: "John"}, {favouriteFruit: blueberry}, (err, johnDoc) => {
+  //   if (err) {
+  //     console.log(err);
+  //   } else {
+  //     console.log("Updated John document: ", johnDoc);
+  //   }
+  // });
+ 
+  // End of second part 
+ 
+  // Find all the fruits inside fruits collection with mongoose .find({}, callback).
+  Fruit.find({}, (err, fruits) => {
+    if (err) {
+      console.log(err);
+    } else {
+ 
+      // Close connection to database if successfull!
+      mongoose.connection.close();
+ 
+      // Console log all the fruit names inside fruits collection.
+      fruits.forEach(fruit => {
+        console.log(fruit.name);
+      });
+    }
+ 
+  });
+ 
+ 
+}
+// end of async main func.
