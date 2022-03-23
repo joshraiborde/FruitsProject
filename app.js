@@ -28,20 +28,20 @@ const Fruit = mongoose.model("Fruit", fruitSchema);
 
 // creating a document from the model Fruit
 const pineapple = new Fruit({
-  // name: "Pineapple",
+  name: "Pineapple",
   rating: 9,
   review: "I like pineapples"
 });
 
-Fruit.insertMany([pineapple], (error) => {
-  if (error) {
-    console.log(error + " " + now.toUTCString());
-  } else {
-    console.log(
-      "Successfully saved fruits to fruitsDB on " + now.toUTCString()
-    );
-  }
-});
+// Fruit.insertMany([pineapple], (error) => {
+//   if (error) {
+//     console.log(error + " " + now.toUTCString());
+//   } else {
+//     console.log(
+//       "Successfully saved fruits to fruitsDB on " + now.toUTCString()
+//     );
+//   }
+// });
 
 // const lemon = new Fruit({
 //   name: "Lemon",
@@ -90,3 +90,31 @@ Fruit.find((err, fruits) => {
     });
   }
 });
+
+// update
+// the 1st param is the item you want to update, which is denoted by the id
+// 2nd param is what do you want to do update about the 1st param, in this case, it is to update the name field of the id
+// 3rd param is to log any errors or a "successful" message.
+// Fruit.updateOne(
+//   { _id: "623b392862be372cf86c5e2a" },
+//   { name: "Peach" },
+//   (err) => {
+//     if (err) {
+//       console.log(error + " " + now.toUTCString());
+//     } else {
+//       console.log("Successfully updated the document on " + now.toUTCString());
+//     }
+//   }
+// );
+
+// delete
+// the 1st param is the item you want to delete, which is denoted by the id
+// 2nd param is to log any errors or a "successful" message.
+
+Fruit.deleteOne({name: "Peach"}, (err) => {
+  if (err) {
+    console.log(error + " " + now.toUTCString());
+  } else {
+    console.log("Successfully deleted the document on " + now.toUTCString());
+  }
+})
